@@ -17,7 +17,7 @@ window.onload = function() {
   var collectablesTimer;
   var keysLastTime = 0;
   var keysDelayTime = 100;
-  var currentDifficulty = 2;
+  var currentDifficulty = 1;
   var obstaclesMoving = {horizontal: [], vertical: []};
   var playing = false;
   var collectables;
