@@ -1,10 +1,11 @@
 window.onload = function() {
   var WIDTH  = 800;
   var HEIGHT = 600;
+  var SPEED  = 4;
   var pixelSize = 2;
   var OFFSETX = 10
   var OFFSETY = 10
-
+  var DIFFICULTY_POINTS = 10;
   // start game engine
   game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO, 'game', { preload: preload, create: create, update: update, render: render });
 
@@ -17,6 +18,7 @@ window.onload = function() {
   var playing = false;
   var obstacles = [];
   var cubeSize = pixelSize * 13;
+  var animationOnLose = [];
 
   var cube = [
     '000000000000',
@@ -47,6 +49,21 @@ window.onload = function() {
     '111111111111',
     '111111111111',
   ];
+
+  var animationData = [
+    [
+    '.cc.',
+    'c..c',
+    'c..c',
+    '.cc.',
+  ],
+  [
+    'c..c',
+    '.cc.',
+    '.cc.',
+    'c..c',
+  ],
+];
 
   var car = [
     '.c.',
@@ -107,19 +124,50 @@ window.onload = function() {
     return group;
   }
 
+  function playAnimation(){
+    player.visible = false;
+    animationOnLose[0].x = player.x;
+    animationOnLose[0].y = player.y;
+    animationOnLose[1].x = player.x;
+    animationOnLose[1].y = player.y;
+    playFrame(1)
+  }
+
+  function playFrame(frame){
+    if(frame < 7){
+      if (frame % 2 == 0){
+        animationOnLose[0].visible = false;
+        animationOnLose[1].visible = true;
+      }
+      else {
+        animationOnLose[0].visible = true;
+        animationOnLose[1].visible = false;
+      }
+      setTimeout(function(){
+        playFrame(frame + 1);
+      }, 250)
+    }
+    else{
+      animationOnLose[0].visible = false;
+      animationOnLose[1].visible = false;
+      player.alive = false;
+    }
+  }
+
   function create() {
     game.create.palettes.push(['#000000', '#8D9D95']);
     game.stage.backgroundColor = "#A7B8B2";
     game.create.texture('cube', cube, pixelSize, pixelSize, 4);
     game.create.texture('backgroundCube', backgroundCube, pixelSize, pixelSize);
 
-
     //  Stop the following keys from propagating up to the browser
-    game.input.keyboard.addKeyCapture([ Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.UP, Phaser.Keyboard.DOWN ]);
-    upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-    downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-    leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    game.input.keyboard.addKeyCapture([ Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.SPACEBAR ]);
+    upKey    = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    downKey  = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    leftKey  = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
     rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
     upKey.onDown.add(function(){
       delay = SHORTDELAY;
     });
@@ -127,28 +175,54 @@ window.onload = function() {
       delay = NORMALDELAY;
     });
     rightKey.onDown.add(function(){
-      if (player.line == 'left'){
+      if (player.alive != false && player.line == 'left'){
         player.line = 'right';
         player.x += cubeSize * 3;
       }
     });
     leftKey.onDown.add(function(){
-      if (player.line == 'right'){
+      if (player.alive != false && player.line == 'right'){
         player.line = 'left';
         player.x -= cubeSize * 3;
       }
     });
+    spaceKey.onDown.add(function(){
+      if (!playing && !player.alive)
+        restart();
+      else
+        delay = SHORTDELAY;
+    });
+    spaceKey.onUp.add(function(){
+      if (playing)
+        delay = NORMALDELAY;
+    });
     track.obj = drawObject(track.scene);
 
+    // create animation played when player lose
+    animationOnLose.push(drawObject(animationData[0]));
+    animationOnLose.push(drawObject(animationData[1]));
+    animationOnLose[0].visible = false;
+    animationOnLose[1].visible = false;
 
     player = drawObject(car);
     player.x = cubeSize * 2;
     player.y = cubeSize * 19;
     player.line = 'left';
     createObstacles();
-
+    playing = true;
   }
 
+  function restart(){
+    obstacles.forEach(function(obs, i){
+      obs.y -= cubeSize * Math.floor(HEIGHT / cubeSize) ;
+      console.log(HEIGHT/cubeSize);
+    })
+    setTimeout(function(){
+      player.visible = true;
+      player.alive   = true;
+      playing = true;
+    }, 100);
+  }
 
   function createObstacles(){
     for (var i = 0; i < 3; i++) {
@@ -163,24 +237,28 @@ window.onload = function() {
   }
 
   function update() {
-    var elapsedTime = game.time.now - lastUpdateTime;
-    if (elapsedTime >= delay){
-      lastUpdateTime = game.time.now;
-
+    if (playing){
+      var elapsedTime = game.time.now - lastUpdateTime;
+      if (elapsedTime >= delay){
+        lastUpdateTime = game.time.now;
         track.update();
         obstacles.forEach(function(obs, i){
-          obs.y += 13 * pixelSize;
+          obs.y += cubeSize;
           if (obs.y > HEIGHT){
             var r = Math.random() * 2;
             obs.x = r > 1? cubeSize * 5 : cubeSize * 2;
-            obs.y = -13 * pixelSize - obs.height - pixelSize;
+            obs.y = -cubeSize - obs.height - pixelSize;
           }
         });
         if (checkCollision()){
-            console.log("perdiste");
+          playAnimation();
+          playing = false;
         }
+      }
     }
   }
+
+
 
   function checkCollision(){
     for (var i = 0; i < obstacles.length; i++) {
@@ -192,11 +270,11 @@ window.onload = function() {
     return false;
   }
 
-  function startGame(){
-
+  function start(){
+    playing = true;
   }
 
-  function endGame(){
+  function end(){
 
   }
 
@@ -207,5 +285,8 @@ window.onload = function() {
 
 
   function preload() {
+    //game.load.bitmapFont('pixel-font', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
+
+    //game.load.spritesheet('window', 'assets/window.png', 84, 66);
   }
 };
