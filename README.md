@@ -5,6 +5,6 @@ Games:
 * Collect!   
 * Race (Bricks Games)
 
-https://laost.github.io/mini-games/
+https://esanhueza.github.io/mini-games/
 
 ... Content is still being organized ...
