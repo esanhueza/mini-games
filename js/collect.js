@@ -26,6 +26,9 @@ window.onload = function() {
   var difficultyText;
   var timeText;
   var elapsedTime = 0;
+  var texturesLoaded = [false, false, false, false]
+  var startBtn;
+
   var player = [
     '77777',
     '77777',
@@ -54,24 +57,18 @@ window.onload = function() {
     '222',
   ];
 
-
   function create() {
-    game.stage.backgroundColor = "#c7c7c7";
-    game.create.texture('player', player, pixelSize, pixelSize);
-    game.create.texture('tilemap', tilemap, pixelSize, pixelSize);
-    game.create.texture('obstacle', obstacle, pixelSize, pixelSize);
-    game.create.texture('collectable', collectable, pixelSize, pixelSize);
-
-
     // create header text
     timeText = game.add.bitmapText(16, 16, 'pixel-font', 'Time: ', 16);
     difficultyText = game.add.bitmapText(16, 48, 'pixel-font', 'Level: ' + currentDifficulty, 16);
     pointsText = game.add.bitmapText(16, 80, 'pixel-font', 'Points: ', 16);
-    var startText = game.add.bitmapText(WIDTH - 16, 16, 'pixel-font', 'Start', 16);
-    startText.inputEnabled = true;
-    startText.events.onInputDown.add(startGame, this);
 
-    startText.anchor.x = 1;
+    startBtn = game.add.bitmapText(WIDTH - 16, 16, 'pixel-font', 'start', 16);
+    startBtn.tint = 0x44891A
+    startBtn.events.onInputDown.add(startGame, this);
+    startBtn.inputEnabled = true;
+    startBtn.anchor.x = 1;
+
     //  Stop the following keys from propagating up to the browser
     game.input.keyboard.addKeyCapture([ Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.UP, Phaser.Keyboard.DOWN ]);
     upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -115,6 +112,7 @@ window.onload = function() {
     timer.loop(2000, moveObstacles, this);
     timer.loop(2500, addCollectable, this);
     timer.loop(1000, updateTime, this);
+
   }
 
   function updateTime(){
@@ -122,8 +120,9 @@ window.onload = function() {
   }
 
   function update() {
-    if (!playing)
+    if (!playing){
       return false
+    }
 
     pointsText.setText('Points: ' + points);
     timeText.setText('Time: ' + elapsedTime);
@@ -260,12 +259,19 @@ window.onload = function() {
   }
 
   function render() {
-
   }
 
 
   function preload() {
     game.load.bitmapFont('pixel-font', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
+
+
+    game.stage.backgroundColor = "#c7c7c7";
+    
+    game.create.texture('player', player, pixelSize, pixelSize, 0, true, function(){});
+    game.create.texture('tilemap', tilemap, pixelSize, pixelSize, 0, true, function(){});
+    game.create.texture('obstacle', obstacle, pixelSize, pixelSize, 0, true, function(){});
+    game.create.texture('collectable', collectable, pixelSize, pixelSize, 0, true, function(){});
 
     //game.load.spritesheet('window', 'assets/window.png', 84, 66);
   }

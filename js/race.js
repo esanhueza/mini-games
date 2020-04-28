@@ -157,8 +157,6 @@ window.onload = function() {
   function create() {
     game.create.palettes.push(['#000000', '#8D9D95']);
     game.stage.backgroundColor = "#A7B8B2";
-    game.create.texture('cube', cube, pixelSize, pixelSize, 4);
-    game.create.texture('backgroundCube', backgroundCube, pixelSize, pixelSize);
 
     //  Stop the following keys from propagating up to the browser
     game.input.keyboard.addKeyCapture([ Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT, Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.SPACEBAR ]);
@@ -285,8 +283,9 @@ window.onload = function() {
 
 
   function preload() {
-    //game.load.bitmapFont('pixel-font', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
-
+    game.load.bitmapFont('pixel-font', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
+    game.create.texture('cube', cube, pixelSize, pixelSize, 0, true, function(){});
+    game.create.texture('backgroundCube', backgroundCube, pixelSize, pixelSize, 0, true, function(){});
     //game.load.spritesheet('window', 'assets/window.png', 84, 66);
   }
 };

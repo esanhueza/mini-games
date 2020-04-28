@@ -190,7 +190,8 @@ window.onload = function() {
   var helperTimer;
   var textTimer;
   var playing = false;
-
+  var texturesLoaded = 0;
+  
   function create() {
     enemySpawnTimer = game.time.create(false);
     helperTimer = game.time.create(false);
@@ -202,20 +203,10 @@ window.onload = function() {
 
     // config textures
     game.stage.backgroundColor = "#000000";
-    game.create.texture('enemy1', enemy1, PIXELSIZE, PIXELSIZE);
-    game.create.texture('player', playerTex, PIXELSIZE, PIXELSIZE);
-    game.create.texture('bullet', bullet, PIXELSIZE * 4, PIXELSIZE * 4);
-    game.create.texture('enemyBullet', enemyBullet, PIXELSIZE * 4, PIXELSIZE * 4);
-    game.create.texture('enemyBlock', enemyBlock, PIXELSIZE * 4, PIXELSIZE * 4);
-    game.create.texture('shieldBlock', shieldBlock, PIXELSIZE * 4, PIXELSIZE * 4);
-    game.create.texture('playerBlock', playerBlock, PIXELSIZE * 4, PIXELSIZE * 4);
-    game.create.texture('shield', shieldTex, PIXELSIZE, PIXELSIZE);
-    game.create.texture('heart', heart, PIXELSIZE/2, PIXELSIZE/2);
-    game.create.texture('tripleShot', tripleShot, PIXELSIZE/2, PIXELSIZE/2);
-    game.create.texture('stop', stop, PIXELSIZE/2, PIXELSIZE/2);
+    
     hud.health = game.add.bitmapText(16, 16, 'pixel-font', 'HEALTH: ', 16);
-    hud.text1 = game.add.bitmapText(game.world.centerX, game.world.centerY - 70, 'pixel-font', 'START GAME', 22);
-    hud.text2 = game.add.bitmapText(game.world.centerX, game.world.centerY - 38, 'pixel-font', 'Press to start', 16);
+    hud.text1 = game.add.bitmapText(game.world.centerX, game.world.centerY - 70, 'pixel-font', 'start game', 22);
+    hud.text2 = game.add.bitmapText(game.world.centerX, game.world.centerY - 38, 'pixel-font', 'press any key to start', 16);
     hud.stage = game.add.bitmapText(game.world.centerX, 16, 'pixel-font', 'STAGE 1', 16);
     hud.stage.anchor.set(0.5);
     hud.text1.anchor.set(0.5);
@@ -418,7 +409,7 @@ window.onload = function() {
     helperTimer.pause();
   }
 
-  function update() {
+  function update() {   
     if (!playing){
       if (game.input.activePointer.isDown)
       {
@@ -602,6 +593,16 @@ window.onload = function() {
 
   function preload() {
     game.load.bitmapFont('pixel-font', 'assets/fonts/carrier_command.png', 'assets/fonts/carrier_command.xml');
-
+    game.create.texture('enemy1', enemy1, PIXELSIZE, PIXELSIZE, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('player', playerTex, PIXELSIZE, PIXELSIZE, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('bullet', bullet, PIXELSIZE * 4, PIXELSIZE * 4, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('enemyBullet', enemyBullet, PIXELSIZE * 4, PIXELSIZE * 4, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('enemyBlock', enemyBlock, PIXELSIZE * 4, PIXELSIZE * 4, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('shieldBlock', shieldBlock, PIXELSIZE * 4, PIXELSIZE * 4, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('playerBlock', playerBlock, PIXELSIZE * 4, PIXELSIZE * 4, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('shield', shieldTex, PIXELSIZE, PIXELSIZE, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('heart', heart, PIXELSIZE/2, PIXELSIZE/2, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('tripleShot', tripleShot, PIXELSIZE/2, PIXELSIZE/2, 0, true, function(){texturesLoaded+=1;});
+    game.create.texture('stop', stop, PIXELSIZE/2, PIXELSIZE/2, 0, true, function(){texturesLoaded+=1;});
   }
 };
